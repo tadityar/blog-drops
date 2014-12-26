@@ -1,0 +1,201 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the standard installation profile.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ */
+function blogdrops_install() {
+  // Insert default pre-defined node types into the database. For a complete
+  // list of available node type attributes, refer to the node type API
+  // documentation at: http://api.drupal.org/api/HEAD/function/hook_node_info.
+  $types = array(
+    array(
+      'type' => 'page',
+      'name' => st('Basic page'),
+      'base' => 'node_content',
+      'description' => st("Use <em>basic pages</em> for your static content, such as an 'About us' page."),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+    array(
+      'type' => 'article',
+      'name' => st('Article'),
+      'base' => 'node_content',
+      'description' => st('Use <em>articles</em> for time-sensitive content like news, press releases or blog posts.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+  );
+
+  foreach ($types as $type) {
+    $type = node_type_set_defaults($type);
+    node_type_save($type);
+    node_add_body_field($type);
+  }
+
+  // Add text formats.
+  $filtered_html_format = array(
+    'format' => 'filtered_html',
+    'name' => 'Filtered HTML',
+    'weight' => 0,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // HTML filter.
+      'filter_html' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 2,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $filtered_html_format = (object) $filtered_html_format;
+  filter_format_save($filtered_html_format);
+
+  $full_html_format = array(
+    'format' => 'full_html',
+    'name' => 'Full HTML',
+    'weight' => 1,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $full_html_format = (object) $full_html_format;
+  filter_format_save($full_html_format);
+  
+  // Any themes without keys here will get numeric keys and so will be enabled,
+  // but not placed into variables.
+  $enable = array(
+    'theme_default' => 'writer',
+    'admin_theme' => 'adminimal',
+  );
+  theme_enable($enable);
+
+  foreach ($enable as $var => $theme) {
+    if (!is_numeric($var)) {
+      variable_set($var, $theme);
+    }
+  }
+
+  // Disable the default Bartik theme
+  theme_disable(array('bartik'));
+
+  // Configuring WYSIWYG
+  $wysiwyg = db_insert('wysiwyg')->fields(array(
+    'format' => 'plain_text',
+    'editor' => 'ckeditor',
+    'settings' => serialize($plain_text_wysiwyg)
+  ))
+  ->execute();
+
+  $values = array(
+    array(
+    'rid' => 1,
+    'permission' => 'access content',
+    'module' => 'node',
+    ),
+    array(
+    'rid' => 1,
+    'permission' => 'vote on polls',
+    'module' => 'poll',
+    ),
+    array(
+    'rid' => 1,
+    'permission' => 'use search',
+    'module' => 'search',
+    ),
+    array(
+    'rid' => 1,
+    'permission' => 'use advanced search',
+    'module' => 'search',
+    ),
+    array(
+    'rid' => 1,
+    'permission' => 'view disqus comments',
+    'module' => 'disqus',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'access content',
+    'module' => 'node',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'vote on polls',
+    'module' => 'poll',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'use search',
+    'module' => 'search',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'use advanced search',
+    'module' => 'search',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'view disqus comments',
+    'module' => 'disqus',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'disqus comments in profile',
+    'module' => 'disqus',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'create blog content',
+    'module' => 'blog',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'view own unpublished content',
+    'module' => 'node',
+    ),
+    array(
+    'rid' => 2,
+    'permission' => 'edit own blog content',
+    'module' => 'blog',
+    ),
+    );
+  $query = db_insert('role_permission')->fields(array('rid', 'permission', 'module'));
+    foreach ($values as $record) {
+    $query->values($record);
+    }
+    $query->execute();
+}
