@@ -20,8 +20,9 @@ from drupal.org
 Inserting Media
 ---------------
 
-Inserting media is made easy by the WYSIWYG module and CKEditor. To insert a
-media just simply click the 'media' button in CKEditor.
+To insert a featured image just simply browse and upload image from the 'Featured
+Image' fields below the text editor. To embed youtube videos please see this guide
+https://drupalize.me/blog/201412/embed-youtube-videos-media-and-media-internet-sources
 
 Configuring the Modules Settings
 --------------------------------

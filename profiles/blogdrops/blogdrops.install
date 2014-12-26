@@ -123,35 +123,18 @@ function blogdrops_install() {
   theme_disable(array('bartik'));
 
   // Set Media markup
-  $mediamarkup = array(
-    array(
-      'format' => 'plain_text',
-      'module' => 'media',
-      'name' => 'media_filter',
-      'weight' => 2,
-      'status' => 1,
-      ),
-    array(
-      'format' => 'filtered_html',
-      'module' => 'media',
-      'name' => 'media_filter',
-      'weight' => 2,
-      'status' => 1,
-      ),
-    array(
-      'format' => 'full_html',
-      'module' => 'media',
-      'name' => 'media_filter',
-      'weight' => 2,
-      'status' => 1,
-      ),
-  );
-
-  $query = db_insert('filter')->fields(array('format', 'module', 'name', 'weight', 'status'));
-    foreach ($mediamarkup as $record) {
-    $query->values($record);
-    }
-    $query->execute();
+  db_update('filter')
+    ->fields(array('status' => 1))
+    ->condition('format', 'plain_text')
+    ->execute();
+  db_update('filter')
+    ->fields(array('status' => 1))
+    ->condition('format', 'filtered_html')
+    ->execute();
+  db_update('filter')
+    ->fields(array('status' => 1))
+    ->condition('format', 'full_html')
+    ->execute();
 
   // Configure filtered html wysiwyg
   $filtered_html_wysiwyg = array(
@@ -553,7 +536,7 @@ function blogdrops_install() {
         'progress_indicator' => 'throbber',
         'preview_image_style' => 'thumbnail',
       ),
-      'weight' => -1,
+      'weight' => -2,
     ),
 
     'display' => array(
@@ -573,4 +556,24 @@ function blogdrops_install() {
   );
   field_create_instance($instance);
 
+  // Create an image field named "Featured Image", enabled for the 'Blog post' content type.
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_field/7
+
+  $field = array(
+    'field_name' => 'field_featured_image',
+    'type' => 'image',
+    'cardinality' => 1,
+    'locked' => FALSE,
+    'indexes' => array('fid' => array('fid')),
+    'settings' => array(
+      'uri_scheme' => 'public',
+      'default_image' => FALSE,
+    ),
+    'storage' => array(
+      'type' => 'field_sql_storage',
+      'settings' => array(),
+    ),
+  );
+  field_create_field($field);
 }
