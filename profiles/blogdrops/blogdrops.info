@@ -36,6 +36,8 @@ dependencies[] = googleanalytics
 dependencies[] = sharethis
 dependencies[] = disqus
 dependencies[] = ds
+dependencies[] = ds_extras
+dependencies[] = ds_ui
 
 ; Files included with profile
 files[] = blogdrop.profile
