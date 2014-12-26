@@ -38,11 +38,7 @@ it manually. First go to admin/modules and enable these modules:
   - Syntaxhighlighter
   - Syntaxhighlighter Insert
   - Syntaxhighlighter Insert WYSIWYG
-Configure the WYSIWYG module by clicking the 'Configure' in the Operation tab, select
-which text format to include syntax highlighting and click edit.Inside 'Buttons and
-Plugins' check 'Insert Syntaxhighlighter Tag'. After that go to admin/config/content/
-formats and click configure on the previously selected text format. In the 'Enabled
-Filters' tab check 'Syntax Highlighter' and you're all set.
+Then follow this guide http://jordanjr.com/articles/drupal-7-syntax-highlighting-using-wysiwyg-ckeditor-and-syntax-highlighter.
 
 2. Permissions and Roles
 ------------------------
@@ -52,3 +48,14 @@ to set who has access to what. The most important thing so that people can see y
 blog is to check 'View published content' for anonymous and authenticated users. The
 rest is optional and should be set according to needs.
 
+3. Setting Up Disqus
+--------------------
+
+To set up disqus comment you need to go to /admin/services/config/disqus and enter
+your disqus shortname. Below that select content types that disqus will be displayed on.
+
+4. Setting Up ShareThis
+-----------------------
+
+To set up ShareThis go to /admin/config/services/sharethis and select the content type
+you want sharethis to be displayed on.
