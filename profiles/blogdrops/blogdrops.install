@@ -32,6 +32,15 @@ function blogdrops_install() {
       'modified' => 1,
       'locked' => 0,
     ),
+    array(
+      'type' => 'blog_post',
+      'name' => st('Blog post'),
+      'base' => 'node_content',
+      'description' => st('Use <em>blog post</em> for a blog entries.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+      ),
   );
 
   foreach ($types as $type) {
@@ -113,14 +122,312 @@ function blogdrops_install() {
   // Disable the default Bartik theme
   theme_disable(array('bartik'));
 
-  // Configuring WYSIWYG
-  $wysiwyg = db_insert('wysiwyg')->fields(array(
-    'format' => 'plain_text',
-    'editor' => 'ckeditor',
-    'settings' => serialize($plain_text_wysiwyg)
-  ))
-  ->execute();
+  // Set Media markup
+  $mediamarkup = array(
+    array(
+      'format' => 'plain_text',
+      'module' => 'media',
+      'name' => 'media_filter',
+      'weight' => 2,
+      'status' => 1,
+      ),
+    array(
+      'format' => 'filtered_html',
+      'module' => 'media',
+      'name' => 'media_filter',
+      'weight' => 2,
+      'status' => 1,
+      ),
+    array(
+      'format' => 'full_html',
+      'module' => 'media',
+      'name' => 'media_filter',
+      'weight' => 2,
+      'status' => 1,
+      ),
+  );
 
+  $query = db_insert('filter')->fields(array('format', 'module', 'name', 'weight', 'status'));
+    foreach ($mediamarkup as $record) {
+    $query->values($record);
+    }
+    $query->execute();
+
+  // Configure filtered html wysiwyg
+  $filtered_html_wysiwyg = array(
+  'default' => 1,
+  'user_choose' => 0,
+  'show_toggle' => 1,
+  'theme' => 'advanced',
+  'language' => 'en',
+  'buttons' =>
+  array (
+    'default' =>
+      array (
+        'Bold' => 1,
+        'Italic' => 1,
+        'Underline' => 1,
+        'Strike' => 1,
+        'JustifyLeft' => 1,
+        'JustifyCenter' => 1,
+        'JustifyRight' => 1,
+        'JustifyBlock' => 1,
+        'BulletedList' => 1,
+        'NumberedList' => 1,
+        'Outdent' => 1,
+        'Indent' => 1,
+        'Undo' => 1,
+        'Redo' => 1,
+        'Link' => 1,
+        'Unlink' => 1,
+        'Anchor' => 1,
+        'Image' => 1,
+        'TextColor' => 1,
+        'BGColor' => 1,
+        'Superscript' => 1,
+        'Subscript' => 1,
+        'Blockquote' => 1,
+        'Source' => 1,
+        'HorizontalRule' => 1,
+        'Cut' => 1,
+        'Copy' => 1,
+        'Paste' => 1,
+        'PasteText' => 1,
+        'PasteFromWord' => 1,
+        'ShowBlocks' => 1,
+        'RemoveFormat' => 1,
+        'SpecialChar' => 1,
+        'Format' => 1,
+        'Font' => 1,
+        'FontSize' => 1,
+        'Styles' => 1,
+        'Table' => 1,
+        'SelectAll' => 1,
+        'Find' => 1,
+        'Replace' => 1,
+        'Flash' => 1,
+        'Smiley' => 1,
+        'CreateDiv' => 1,
+        'Iframe' => 1,
+        'Maximize' => 1,
+        'SpellChecker' => 1,
+        'Scayt' => 1,
+        'About' => 1,
+        'Media' => 1,
+      ),
+    'drupal' =>
+      array (
+        'break' => 1,
+      ),
+    ),
+    'toolbar_loc' => 'top',
+    'toolbar_align' => 'left',
+    'path_loc' => 'bottom',
+    'resizing' => 1,
+    'verify_html' => 1,
+    'preformatted' => 0,
+    'convert_fonts_to_spans' => 1,
+    'remove_linebreaks' => 0,
+    'apply_source_formatting' => 0,
+    'paste_auto_cleanup_on_paste' => 0,
+    'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6,div',
+    'css_setting' => 'theme',
+    'css_path' => '',
+    'css_classes' => '',
+);
+
+// Configure full html wysiwyg
+  $full_html_wysiwyg = array(
+  'default' => 1,
+  'user_choose' => 0,
+  'show_toggle' => 1,
+  'theme' => 'advanced',
+  'language' => 'en',
+  'buttons' =>
+  array (
+    'default' =>
+      array (
+        'Bold' => 1,
+        'Italic' => 1,
+        'Underline' => 1,
+        'Strike' => 1,
+        'JustifyLeft' => 1,
+        'JustifyCenter' => 1,
+        'JustifyRight' => 1,
+        'JustifyBlock' => 1,
+        'BulletedList' => 1,
+        'NumberedList' => 1,
+        'Outdent' => 1,
+        'Indent' => 1,
+        'Undo' => 1,
+        'Redo' => 1,
+        'Link' => 1,
+        'Unlink' => 1,
+        'Anchor' => 1,
+        'Image' => 1,
+        'TextColor' => 1,
+        'BGColor' => 1,
+        'Superscript' => 1,
+        'Subscript' => 1,
+        'Blockquote' => 1,
+        'Source' => 1,
+        'HorizontalRule' => 1,
+        'Cut' => 1,
+        'Copy' => 1,
+        'Paste' => 1,
+        'PasteText' => 1,
+        'PasteFromWord' => 1,
+        'ShowBlocks' => 1,
+        'RemoveFormat' => 1,
+        'SpecialChar' => 1,
+        'Format' => 1,
+        'Font' => 1,
+        'FontSize' => 1,
+        'Styles' => 1,
+        'Table' => 1,
+        'SelectAll' => 1,
+        'Find' => 1,
+        'Replace' => 1,
+        'Flash' => 1,
+        'Smiley' => 1,
+        'CreateDiv' => 1,
+        'Iframe' => 1,
+        'Maximize' => 1,
+        'SpellChecker' => 1,
+        'Scayt' => 1,
+        'About' => 1,
+        'Media' => 1,
+      ),
+    'drupal' =>
+      array (
+        'break' => 1,
+      ),
+    ),
+    'toolbar_loc' => 'top',
+    'toolbar_align' => 'left',
+    'path_loc' => 'bottom',
+    'resizing' => 1,
+    'verify_html' => 1,
+    'preformatted' => 0,
+    'convert_fonts_to_spans' => 1,
+    'remove_linebreaks' => 0,
+    'apply_source_formatting' => 0,
+    'paste_auto_cleanup_on_paste' => 0,
+    'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6,div',
+    'css_setting' => 'theme',
+    'css_path' => '',
+    'css_classes' => '',
+);
+
+// Configure plain text wysiwyg
+  $plain_text_wysiwyg = array(
+  'default' => 1,
+  'user_choose' => 0,
+  'show_toggle' => 1,
+  'theme' => 'advanced',
+  'language' => 'en',
+  'buttons' =>
+  array (
+    'default' =>
+      array (
+        'Bold' => 1,
+        'Italic' => 1,
+        'Underline' => 1,
+        'Strike' => 1,
+        'JustifyLeft' => 1,
+        'JustifyCenter' => 1,
+        'JustifyRight' => 1,
+        'JustifyBlock' => 1,
+        'BulletedList' => 1,
+        'NumberedList' => 1,
+        'Outdent' => 1,
+        'Indent' => 1,
+        'Undo' => 1,
+        'Redo' => 1,
+        'Link' => 1,
+        'Unlink' => 1,
+        'Anchor' => 1,
+        'Image' => 1,
+        'TextColor' => 1,
+        'BGColor' => 1,
+        'Superscript' => 1,
+        'Subscript' => 1,
+        'Blockquote' => 1,
+        'Source' => 1,
+        'HorizontalRule' => 1,
+        'Cut' => 1,
+        'Copy' => 1,
+        'Paste' => 1,
+        'PasteText' => 1,
+        'PasteFromWord' => 1,
+        'ShowBlocks' => 1,
+        'RemoveFormat' => 1,
+        'SpecialChar' => 1,
+        'Format' => 1,
+        'Font' => 1,
+        'FontSize' => 1,
+        'Styles' => 1,
+        'Table' => 1,
+        'SelectAll' => 1,
+        'Find' => 1,
+        'Replace' => 1,
+        'Flash' => 1,
+        'Smiley' => 1,
+        'CreateDiv' => 1,
+        'Iframe' => 1,
+        'Maximize' => 1,
+        'SpellChecker' => 1,
+        'Scayt' => 1,
+        'About' => 1,
+        'Media' => 1,
+      ),
+    'drupal' =>
+      array (
+        'break' => 1,
+      ),
+    ),
+    'toolbar_loc' => 'top',
+    'toolbar_align' => 'left',
+    'path_loc' => 'bottom',
+    'resizing' => 1,
+    'verify_html' => 1,
+    'preformatted' => 0,
+    'convert_fonts_to_spans' => 1,
+    'remove_linebreaks' => 0,
+    'apply_source_formatting' => 0,
+    'paste_auto_cleanup_on_paste' => 0,
+    'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6,div',
+    'css_setting' => 'theme',
+    'css_path' => '',
+    'css_classes' => '',
+);
+
+  // Configuring WYSIWYG
+  $wysiwyg = array(
+    array(
+      'format' => 'plain_text',
+      'editor' => 'ckeditor',
+      'settings' => serialize($plain_text_wysiwyg),
+      ),
+    array(
+      'format' => 'filtered_html',
+      'editor' => 'ckeditor',
+      'settings' => serialize($filtered_html_wysiwyg),
+      ),
+    array(
+      'format' => 'full_html',
+      'editor' => 'ckeditor',
+      'settings' => serialize($full_html_wysiwyg),
+      ),
+  );
+
+  $query = db_insert('wysiwyg')->fields(array('format', 'editor', 'settings'));
+    foreach ($wysiwyg as $record) {
+    $query->values($record);
+    }
+    $query->execute();
+
+  // Set permissions for default user types.
   $values = array(
     array(
     'rid' => 1,
@@ -179,7 +486,7 @@ function blogdrops_install() {
     ),
     array(
     'rid' => 2,
-    'permission' => 'create blog content',
+    'permission' => 'create blog_post content',
     'module' => 'blog',
     ),
     array(
@@ -198,4 +505,72 @@ function blogdrops_install() {
     $query->values($record);
     }
     $query->execute();
+
+  // Create an image field named "Featured Image", enabled for the 'Blog post' content type.
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_field/7
+
+  $field = array(
+    'field_name' => 'field_featured_image',
+    'type' => 'image',
+    'cardinality' => 1,
+    'locked' => FALSE,
+    'indexes' => array('fid' => array('fid')),
+    'settings' => array(
+      'uri_scheme' => 'public',
+      'default_image' => FALSE,
+    ),
+    'storage' => array(
+      'type' => 'field_sql_storage',
+      'settings' => array(),
+    ),
+  );
+  field_create_field($field);
+
+   // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_instance/7
+  $instance = array(
+    'field_name' => 'field_featured_image',
+    'entity_type' => 'node',
+    'label' => 'Featured Image',
+    'bundle' => 'blog_post',
+    'description' => st('Upload a featured image for this blog post.'),
+    'required' => FALSE,
+
+    'settings' => array(
+      'file_directory' => 'field/featured_image',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '',
+      'max_resolution' => '',
+      'min_resolution' => '',
+      'alt_field' => TRUE,
+      'title_field' => '',
+    ),
+
+    'widget' => array(
+      'type' => 'image_image',
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+        'preview_image_style' => 'thumbnail',
+      ),
+      'weight' => -1,
+    ),
+
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'large', 'image_link' => ''),
+        'weight' => -1,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'content'),
+        'weight' => -1,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+
 }
